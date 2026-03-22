@@ -4,6 +4,7 @@ import { callAI, parseJsonResponse } from '../services/gemini'
 import { KEYWORDS_EXPAND_SYSTEM, KEYWORDS_EXPAND_USER, KEYWORDS_NONOBVIOUS_SYSTEM, KEYWORDS_NONOBVIOUS_USER } from '../prompts/keywords'
 import { Panel } from './Panel'
 import { TagList } from './TagList'
+import { CopyButton } from './CopyButton'
 
 export function KeywordsSkills() {
   const [error, setError] = useState('')
@@ -62,20 +63,32 @@ export function KeywordsSkills() {
             {jdAnalysis && (
               <>
                 <div>
-                  <p className="text-xs text-text-muted mb-1.5 font-medium">Must Have</p>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <p className="text-xs text-text-muted font-medium">Must Have</p>
+                    <CopyButton text={jdAnalysis.mustHaveSkills.join(', ')} label="Copy" size="sm" />
+                  </div>
                   <TagList tags={jdAnalysis.mustHaveSkills} onTagClick={addTerm} color="green" />
                 </div>
                 <div>
-                  <p className="text-xs text-text-muted mb-1.5 font-medium">Nice to Have</p>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <p className="text-xs text-text-muted font-medium">Nice to Have</p>
+                    <CopyButton text={jdAnalysis.niceToHaveSkills.join(', ')} label="Copy" size="sm" />
+                  </div>
                   <TagList tags={jdAnalysis.niceToHaveSkills} onTagClick={addTerm} color="blue" />
                 </div>
                 <div>
-                  <p className="text-xs text-text-muted mb-1.5 font-medium">Tools</p>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <p className="text-xs text-text-muted font-medium">Tools</p>
+                    <CopyButton text={jdAnalysis.tools.join(', ')} label="Copy" size="sm" />
+                  </div>
                   <TagList tags={jdAnalysis.tools} onTagClick={addTerm} color="purple" />
                 </div>
                 {jdAnalysis.nonObviousTerms.length > 0 && (
                   <div>
-                    <p className="text-xs text-text-muted mb-1.5 font-medium">Non-obvious Terms</p>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <p className="text-xs text-text-muted font-medium">Non-obvious Terms</p>
+                      <CopyButton text={jdAnalysis.nonObviousTerms.join(', ')} label="Copy" size="sm" />
+                    </div>
                     <TagList tags={jdAnalysis.nonObviousTerms} onTagClick={addTerm} color="amber" />
                   </div>
                 )}
@@ -84,7 +97,10 @@ export function KeywordsSkills() {
 
             {expandedKeywords.length > 0 && (
               <div>
-                <p className="text-xs text-text-muted mb-1.5 font-medium">Expanded Terms</p>
+                <div className="flex items-center justify-between mb-1.5">
+                  <p className="text-xs text-text-muted font-medium">Expanded Terms</p>
+                  <CopyButton text={expandedKeywords.join(', ')} label="Copy" size="sm" />
+                </div>
                 <TagList tags={expandedKeywords} onTagClick={addTerm} color="rose" />
               </div>
             )}

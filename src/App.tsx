@@ -6,11 +6,13 @@ import { BooleanBuilder } from './components/BooleanBuilder'
 import { DonorCompanies } from './components/DonorCompanies'
 import { OutreachGenerator } from './components/OutreachGenerator'
 import { MarketMap } from './components/MarketMap'
+import { ToastContainer } from './components/Toast'
 
 function App() {
   return (
     <div className="min-h-screen bg-surface flex flex-col">
       <Header />
+      <ToastContainer />
       <main className="flex-1 p-4 grid grid-cols-1 lg:grid-cols-3 gap-4 auto-rows-min">
         {/* Left column: JD Analyzer (spans 2 rows) */}
         <div className="lg:row-span-2">

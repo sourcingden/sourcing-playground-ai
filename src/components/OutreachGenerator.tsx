@@ -3,6 +3,7 @@ import { usePlaygroundStore } from '../store/usePlaygroundStore'
 import { callAI, parseJsonResponse } from '../services/gemini'
 import { OUTREACH_SYSTEM, OUTREACH_USER } from '../prompts/outreach'
 import { Panel } from './Panel'
+import { CopyButton } from './CopyButton'
 
 interface OutreachResult {
   subject: string
@@ -18,7 +19,6 @@ export function OutreachGenerator() {
   const [tone, setTone] = useState('friendly')
   const [result, setResult] = useState<OutreachResult | null>(null)
   const [error, setError] = useState('')
-  const [copied, setCopied] = useState('')
 
   const apiKey = usePlaygroundStore((s) => s.apiKey)
   const jdAnalysis = usePlaygroundStore((s) => s.jdAnalysis)
@@ -48,12 +48,6 @@ export function OutreachGenerator() {
     } finally {
       setLoading('outreach', false)
     }
-  }
-
-  const copyToClipboard = (text: string, label: string) => {
-    navigator.clipboard.writeText(text)
-    setCopied(label)
-    setTimeout(() => setCopied(''), 2000)
   }
 
   return (
@@ -111,21 +105,17 @@ export function OutreachGenerator() {
         {result && (
           <div className="space-y-2 pt-1">
             <div className="bg-surface rounded-lg p-3">
-              <div className="flex items-center justify-between mb-1">
+              <div className="flex items-center justify-between mb-2">
                 <span className="text-xs font-medium text-text-muted">Email</span>
-                <button onClick={() => copyToClipboard(`Subject: ${result.subject}\n\n${result.message}`, 'email')} className="text-xs text-primary cursor-pointer">
-                  {copied === 'email' ? 'Copied!' : 'Copy'}
-                </button>
+                <CopyButton text={`Subject: ${result.subject}\n\n${result.message}`} label="Copy" size="sm" />
               </div>
               <p className="text-xs font-medium text-text mb-1">Subject: {result.subject}</p>
               <p className="text-xs text-text-muted whitespace-pre-wrap">{result.message}</p>
             </div>
             <div className="bg-surface rounded-lg p-3">
-              <div className="flex items-center justify-between mb-1">
+              <div className="flex items-center justify-between mb-2">
                 <span className="text-xs font-medium text-text-muted">LinkedIn Note</span>
-                <button onClick={() => copyToClipboard(result.linkedinNote, 'linkedin')} className="text-xs text-primary cursor-pointer">
-                  {copied === 'linkedin' ? 'Copied!' : 'Copy'}
-                </button>
+                <CopyButton text={result.linkedinNote} label="Copy" size="sm" />
               </div>
               <p className="text-xs text-text-muted">{result.linkedinNote}</p>
             </div>

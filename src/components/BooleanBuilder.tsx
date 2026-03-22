@@ -3,6 +3,7 @@ import { usePlaygroundStore } from '../store/usePlaygroundStore'
 import { callAI, parseJsonResponse } from '../services/gemini'
 import { BOOLEAN_GENERATE_SYSTEM, BOOLEAN_GENERATE_USER, BOOLEAN_REVIEW_SYSTEM, BOOLEAN_REVIEW_USER } from '../prompts/boolean'
 import { Panel } from './Panel'
+import { CopyButton } from './CopyButton'
 
 interface BooleanStrings {
   linkedin: string
@@ -25,7 +26,6 @@ export function BooleanBuilder() {
   const [practiceQuery, setPracticeQuery] = useState('')
   const [review, setReview] = useState<BooleanReview | null>(null)
   const [error, setError] = useState('')
-  const [copied, setCopied] = useState('')
 
   const apiKey = usePlaygroundStore((s) => s.apiKey)
   const selectedTerms = usePlaygroundStore((s) => s.selectedTerms)
@@ -62,12 +62,6 @@ export function BooleanBuilder() {
     } finally {
       setLoading('boolean-review', false)
     }
-  }
-
-  const copyToClipboard = (text: string, label: string) => {
-    navigator.clipboard.writeText(text)
-    setCopied(label)
-    setTimeout(() => setCopied(''), 2000)
   }
 
   const isLoading = loading['boolean'] || loading['boolean-review']
@@ -194,12 +188,9 @@ export function BooleanBuilder() {
                     <div className="bg-surface-light p-2 rounded text-xs font-mono text-text break-all">
                       {review.improved}
                     </div>
-                    <button
-                      onClick={() => copyToClipboard(review.improved, 'improved')}
-                      className="mt-1 text-xs text-primary hover:text-primary-dark cursor-pointer"
-                    >
-                      {copied === 'improved' ? 'Copied!' : 'Copy improved'}
-                    </button>
+                    <div className="mt-2">
+                      <CopyButton text={review.improved} label="Copy" size="sm" />
+                    </div>
                   </div>
                 )}
               </div>
@@ -211,14 +202,9 @@ export function BooleanBuilder() {
           <div className="space-y-2">
             {(['linkedin', 'github', 'google'] as const).map((platform) => (
               <div key={platform} className="bg-surface rounded-lg p-2">
-                <div className="flex items-center justify-between mb-1">
+                <div className="flex items-center justify-between mb-2">
                   <span className="text-xs font-medium text-text-muted capitalize">{platform}</span>
-                  <button
-                    onClick={() => copyToClipboard(generated[platform], platform)}
-                    className="text-xs text-primary hover:text-primary-dark cursor-pointer"
-                  >
-                    {copied === platform ? 'Copied!' : 'Copy'}
-                  </button>
+                  <CopyButton text={generated[platform]} label="Copy" size="sm" />
                 </div>
                 <p className="text-xs font-mono text-text break-all leading-relaxed">
                   {generated[platform]}
