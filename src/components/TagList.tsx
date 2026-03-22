@@ -19,17 +19,19 @@ export function TagList({ tags, onTagClick, color = 'blue', size = 'sm' }: TagLi
   const sizeClass = size === 'sm' ? 'text-xs px-2 py-0.5' : 'text-sm px-3 py-1'
 
   return (
-    <div className="flex flex-wrap gap-1.5">
+    <ul className="flex flex-wrap gap-1.5 list-none p-0 m-0" role="list">
       {tags.map((tag) => (
-        <button
-          key={tag}
-          onClick={() => onTagClick?.(tag)}
-          className={`${colorMap[color]} ${sizeClass} rounded-md border font-medium transition-colors cursor-pointer`}
-        >
-          {tag}
-          {onTagClick && <span className="ml-1 opacity-60">+</span>}
-        </button>
+        <li key={tag} role="listitem">
+          <button
+            onClick={() => onTagClick?.(tag)}
+            aria-label={onTagClick ? `Add "${tag}" to boolean builder` : tag}
+            className={`${colorMap[color]} ${sizeClass} rounded-md border font-medium transition-colors cursor-pointer`}
+          >
+            {tag}
+            {onTagClick && <span className="ml-1 opacity-60" aria-hidden="true">+</span>}
+          </button>
+        </li>
       ))}
-    </div>
+    </ul>
   )
 }

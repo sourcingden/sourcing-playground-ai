@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { usePlaygroundStore } from '../store/usePlaygroundStore'
-import { callAI, parseJsonResponse } from '../services/gemini'
+import { callAIWithRetry, parseJsonResponse } from '../services/gemini'
 import { KEYWORDS_EXPAND_SYSTEM, KEYWORDS_EXPAND_USER, KEYWORDS_NONOBVIOUS_SYSTEM, KEYWORDS_NONOBVIOUS_USER } from '../prompts/keywords'
 import { Panel } from './Panel'
 import { TagList } from './TagList'
@@ -21,7 +21,7 @@ export function KeywordsSkills() {
     setError('')
     setLoading('keywords-expand', true)
     try {
-      const response = await callAI(apiKey, KEYWORDS_EXPAND_SYSTEM, KEYWORDS_EXPAND_USER(keywords))
+      const response = await callAIWithRetry(apiKey, KEYWORDS_EXPAND_SYSTEM, KEYWORDS_EXPAND_USER(keywords))
       const expanded = parseJsonResponse<string[]>(response)
       setExpandedKeywords(expanded)
     } catch (e) {
@@ -36,7 +36,7 @@ export function KeywordsSkills() {
     setError('')
     setLoading('keywords-nonobvious', true)
     try {
-      const response = await callAI(
+      const response = await callAIWithRetry(
         apiKey,
         KEYWORDS_NONOBVIOUS_SYSTEM,
         KEYWORDS_NONOBVIOUS_USER(keywords, jdAnalysis.summary),
@@ -59,35 +59,37 @@ export function KeywordsSkills() {
           <p className="text-text-muted text-sm">Analyze a JD to extract keywords</p>
         ) : (
           <>
-            {jdAnalysis && (
-              <>
-                <div>
-                  <p className="text-xs text-text-muted mb-1.5 font-medium">Must Have</p>
-                  <TagList tags={jdAnalysis.mustHaveSkills} onTagClick={addTerm} color="green" />
-                </div>
-                <div>
-                  <p className="text-xs text-text-muted mb-1.5 font-medium">Nice to Have</p>
-                  <TagList tags={jdAnalysis.niceToHaveSkills} onTagClick={addTerm} color="blue" />
-                </div>
-                <div>
-                  <p className="text-xs text-text-muted mb-1.5 font-medium">Tools</p>
-                  <TagList tags={jdAnalysis.tools} onTagClick={addTerm} color="purple" />
-                </div>
-                {jdAnalysis.nonObviousTerms.length > 0 && (
+            <div aria-live="polite">
+              {jdAnalysis && (
+                <>
                   <div>
-                    <p className="text-xs text-text-muted mb-1.5 font-medium">Non-obvious Terms</p>
-                    <TagList tags={jdAnalysis.nonObviousTerms} onTagClick={addTerm} color="amber" />
+                    <p className="text-xs text-text-muted mb-1.5 font-medium">Must Have</p>
+                    <TagList tags={jdAnalysis.mustHaveSkills} onTagClick={addTerm} color="green" />
                   </div>
-                )}
-              </>
-            )}
+                  <div className="mt-3">
+                    <p className="text-xs text-text-muted mb-1.5 font-medium">Nice to Have</p>
+                    <TagList tags={jdAnalysis.niceToHaveSkills} onTagClick={addTerm} color="blue" />
+                  </div>
+                  <div className="mt-3">
+                    <p className="text-xs text-text-muted mb-1.5 font-medium">Tools</p>
+                    <TagList tags={jdAnalysis.tools} onTagClick={addTerm} color="purple" />
+                  </div>
+                  {jdAnalysis.nonObviousTerms.length > 0 && (
+                    <div className="mt-3">
+                      <p className="text-xs text-text-muted mb-1.5 font-medium">Non-obvious Terms</p>
+                      <TagList tags={jdAnalysis.nonObviousTerms} onTagClick={addTerm} color="amber" />
+                    </div>
+                  )}
+                </>
+              )}
 
-            {expandedKeywords.length > 0 && (
-              <div>
-                <p className="text-xs text-text-muted mb-1.5 font-medium">Expanded Terms</p>
-                <TagList tags={expandedKeywords} onTagClick={addTerm} color="rose" />
-              </div>
-            )}
+              {expandedKeywords.length > 0 && (
+                <div className="mt-3">
+                  <p className="text-xs text-text-muted mb-1.5 font-medium">Expanded Terms</p>
+                  <TagList tags={expandedKeywords} onTagClick={addTerm} color="rose" />
+                </div>
+              )}
+            </div>
 
             <div className="flex gap-2 pt-1">
               <button
@@ -107,7 +109,7 @@ export function KeywordsSkills() {
             </div>
           </>
         )}
-        {error && <p className="text-accent-rose text-xs">{error}</p>}
+        {error && <p className="text-accent-rose text-xs" role="alert">{error}</p>}
       </div>
     </Panel>
   )

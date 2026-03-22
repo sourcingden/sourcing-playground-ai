@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { usePlaygroundStore } from '../store/usePlaygroundStore'
-import { callAI, parseJsonResponse } from '../services/gemini'
+import { callAIWithRetry, parseJsonResponse } from '../services/gemini'
 import { MARKET_MAP_SYSTEM, MARKET_MAP_USER } from '../prompts/marketMap'
 import { Panel } from './Panel'
 
@@ -28,7 +28,7 @@ export function MarketMap() {
     setLoading('market', true)
     try {
       const skills = [...jdAnalysis.mustHaveSkills, ...jdAnalysis.tools]
-      const response = await callAI(
+      const response = await callAIWithRetry(
         apiKey,
         MARKET_MAP_SYSTEM,
         MARKET_MAP_USER(jdAnalysis.summary, jdAnalysis.industry, skills),
@@ -57,7 +57,7 @@ export function MarketMap() {
             </button>
 
             {data && (
-              <div className="space-y-3">
+              <div className="space-y-3" aria-live="polite">
                 <div>
                   <p className="text-xs text-text-muted whitespace-pre-wrap leading-relaxed">{data.overview}</p>
                 </div>
@@ -118,7 +118,7 @@ export function MarketMap() {
             )}
           </>
         )}
-        {error && <p className="text-accent-rose text-xs">{error}</p>}
+        {error && <p className="text-accent-rose text-xs" role="alert">{error}</p>}
       </div>
     </Panel>
   )

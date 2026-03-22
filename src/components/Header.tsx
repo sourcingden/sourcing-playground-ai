@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { usePlaygroundStore } from '../store/usePlaygroundStore'
 
 export function Header() {
@@ -6,17 +6,30 @@ export function Header() {
   const [keyInput, setKeyInput] = useState('')
   const apiKey = usePlaygroundStore((s) => s.apiKey)
   const setApiKey = usePlaygroundStore((s) => s.setApiKey)
+  const dialogRef = useRef<HTMLDivElement>(null)
 
   const handleSave = () => {
     setApiKey(keyInput)
     setShowSettings(false)
   }
 
+  // Trap focus in modal and handle Escape
+  useEffect(() => {
+    if (!showSettings) return
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setShowSettings(false)
+      }
+    }
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [showSettings])
+
   return (
     <>
       <header className="flex items-center justify-between px-6 py-4 border-b border-border bg-surface-light/50 backdrop-blur-sm">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white font-bold text-sm">
+          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white font-bold text-sm" aria-hidden="true">
             AI
           </div>
           <div>
@@ -29,30 +42,43 @@ export function Header() {
             setKeyInput(apiKey)
             setShowSettings(true)
           }}
+          aria-label={apiKey ? 'API connected. Click to change API key settings' : 'API key not set. Click to configure'}
           className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm transition-colors cursor-pointer ${
             apiKey
               ? 'bg-accent-green/15 text-accent-green border border-accent-green/30'
               : 'bg-accent-rose/15 text-accent-rose border border-accent-rose/30'
           }`}
         >
-          <span className={`w-2 h-2 rounded-full ${apiKey ? 'bg-accent-green' : 'bg-accent-rose'}`} />
+          <span className={`w-2 h-2 rounded-full ${apiKey ? 'bg-accent-green' : 'bg-accent-rose'}`} aria-hidden="true" />
           {apiKey ? 'API Connected' : 'Set API Key'}
         </button>
       </header>
 
       {showSettings && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="bg-surface-light border border-border rounded-xl p-6 w-full max-w-md mx-4">
-            <h2 className="text-lg font-semibold mb-4">API Settings</h2>
-            <label className="block text-sm text-text-muted mb-2">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="settings-dialog-title"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setShowSettings(false)
+          }}
+        >
+          <div ref={dialogRef} className="bg-surface-light border border-border rounded-xl p-6 w-full max-w-md mx-4">
+            <h2 id="settings-dialog-title" className="text-lg font-semibold mb-4">API Settings</h2>
+            <label htmlFor="gemini-api-key-input" className="block text-sm text-text-muted mb-2">
               Gemini API Key
             </label>
             <input
+              id="gemini-api-key-input"
               type="password"
               value={keyInput}
               onChange={(e) => setKeyInput(e.target.value)}
               placeholder="AIza..."
               className="w-full px-3 py-2 bg-surface border border-border rounded-lg text-text text-sm mb-4"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') handleSave()
+              }}
             />
             <p className="text-xs text-text-muted mb-4">
               Your key is stored locally in your browser and never sent to any server other than Google's Gemini API.
