@@ -55,7 +55,7 @@ interface PlaygroundState {
 }
 
 export const usePlaygroundStore = create<PlaygroundState>((set) => ({
-  apiKey: localStorage.getItem('gemini-api-key') || '',
+  apiKey: localStorage.getItem('gemini-api-key') || import.meta.env.VITE_GEMINI_API_KEY || '',
   setApiKey: (key) => {
     localStorage.setItem('gemini-api-key', key)
     set({ apiKey: key })
