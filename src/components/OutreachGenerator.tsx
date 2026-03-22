@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { usePlaygroundStore } from '../store/usePlaygroundStore'
-import { callClaude, parseJsonResponse } from '../services/claude'
+import { callAI, parseJsonResponse } from '../services/gemini'
 import { OUTREACH_SYSTEM, OUTREACH_USER } from '../prompts/outreach'
 import { Panel } from './Panel'
 
@@ -30,7 +30,7 @@ export function OutreachGenerator() {
     setError('')
     setLoading('outreach', true)
     try {
-      const response = await callClaude(
+      const response = await callAI(
         apiKey,
         OUTREACH_SYSTEM,
         OUTREACH_USER({

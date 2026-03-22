@@ -45,17 +45,17 @@ export function Header() {
           <div className="bg-surface-light border border-border rounded-xl p-6 w-full max-w-md mx-4">
             <h2 className="text-lg font-semibold mb-4">API Settings</h2>
             <label className="block text-sm text-text-muted mb-2">
-              Claude API Key
+              Gemini API Key
             </label>
             <input
               type="password"
               value={keyInput}
               onChange={(e) => setKeyInput(e.target.value)}
-              placeholder="sk-ant-..."
+              placeholder="AIza..."
               className="w-full px-3 py-2 bg-surface border border-border rounded-lg text-text text-sm mb-4"
             />
             <p className="text-xs text-text-muted mb-4">
-              Your key is stored locally in your browser and never sent to any server other than Anthropic's API.
+              Your key is stored locally in your browser and never sent to any server other than Google's Gemini API.
             </p>
             <div className="flex gap-3 justify-end">
               <button

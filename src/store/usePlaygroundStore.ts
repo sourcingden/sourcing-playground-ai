@@ -55,9 +55,9 @@ interface PlaygroundState {
 }
 
 export const usePlaygroundStore = create<PlaygroundState>((set) => ({
-  apiKey: localStorage.getItem('claude-api-key') || '',
+  apiKey: localStorage.getItem('gemini-api-key') || '',
   setApiKey: (key) => {
-    localStorage.setItem('claude-api-key', key)
+    localStorage.setItem('gemini-api-key', key)
     set({ apiKey: key })
   },
 

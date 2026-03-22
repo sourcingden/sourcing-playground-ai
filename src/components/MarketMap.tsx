@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { usePlaygroundStore } from '../store/usePlaygroundStore'
-import { callClaude, parseJsonResponse } from '../services/claude'
+import { callAI, parseJsonResponse } from '../services/gemini'
 import { MARKET_MAP_SYSTEM, MARKET_MAP_USER } from '../prompts/marketMap'
 import { Panel } from './Panel'
 
@@ -28,7 +28,7 @@ export function MarketMap() {
     setLoading('market', true)
     try {
       const skills = [...jdAnalysis.mustHaveSkills, ...jdAnalysis.tools]
-      const response = await callClaude(
+      const response = await callAI(
         apiKey,
         MARKET_MAP_SYSTEM,
         MARKET_MAP_USER(jdAnalysis.summary, jdAnalysis.industry, skills),

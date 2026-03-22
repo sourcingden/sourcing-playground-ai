@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { usePlaygroundStore } from '../store/usePlaygroundStore'
-import { callClaude, parseJsonResponse } from '../services/claude'
+import { callAI, parseJsonResponse } from '../services/gemini'
 import { KEYWORDS_EXPAND_SYSTEM, KEYWORDS_EXPAND_USER, KEYWORDS_NONOBVIOUS_SYSTEM, KEYWORDS_NONOBVIOUS_USER } from '../prompts/keywords'
 import { Panel } from './Panel'
 import { TagList } from './TagList'
@@ -21,7 +21,7 @@ export function KeywordsSkills() {
     setError('')
     setLoading('keywords-expand', true)
     try {
-      const response = await callClaude(apiKey, KEYWORDS_EXPAND_SYSTEM, KEYWORDS_EXPAND_USER(keywords))
+      const response = await callAI(apiKey, KEYWORDS_EXPAND_SYSTEM, KEYWORDS_EXPAND_USER(keywords))
       const expanded = parseJsonResponse<string[]>(response)
       setExpandedKeywords(expanded)
     } catch (e) {
@@ -36,7 +36,7 @@ export function KeywordsSkills() {
     setError('')
     setLoading('keywords-nonobvious', true)
     try {
-      const response = await callClaude(
+      const response = await callAI(
         apiKey,
         KEYWORDS_NONOBVIOUS_SYSTEM,
         KEYWORDS_NONOBVIOUS_USER(keywords, jdAnalysis.summary),

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { usePlaygroundStore } from '../store/usePlaygroundStore'
-import { callClaude, parseJsonResponse } from '../services/claude'
+import { callAI, parseJsonResponse } from '../services/gemini'
 import { JOB_TITLES_SYSTEM, JOB_TITLES_USER } from '../prompts/jobTitles'
 import { Panel } from './Panel'
 import { TagList } from './TagList'
@@ -20,7 +20,7 @@ export function JobTitles() {
     setLoading('titles', true)
     setError('')
     try {
-      const response = await callClaude(
+      const response = await callAI(
         apiKey,
         JOB_TITLES_SYSTEM,
         JOB_TITLES_USER(jdAnalysis.jobTitle, jdAnalysis.summary),

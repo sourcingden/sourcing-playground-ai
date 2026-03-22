@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { usePlaygroundStore } from '../store/usePlaygroundStore'
-import { callClaude, parseJsonResponse } from '../services/claude'
+import { callAI, parseJsonResponse } from '../services/gemini'
 import { JD_ANALYSIS_SYSTEM, JD_ANALYSIS_USER } from '../prompts/jdAnalysis'
 import { Panel } from './Panel'
 import type { JDAnalysis } from '../store/usePlaygroundStore'
@@ -30,7 +30,7 @@ export function JDAnalyzer() {
     setError('')
     setLoading('jd', true)
     try {
-      const response = await callClaude(apiKey, JD_ANALYSIS_SYSTEM, JD_ANALYSIS_USER(jobDescription))
+      const response = await callAI(apiKey, JD_ANALYSIS_SYSTEM, JD_ANALYSIS_USER(jobDescription))
       const analysis = parseJsonResponse<JDAnalysis>(response)
       setJDAnalysis(analysis)
 

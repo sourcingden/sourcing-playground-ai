@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { usePlaygroundStore } from '../store/usePlaygroundStore'
-import { callClaude, parseJsonResponse } from '../services/claude'
+import { callAI, parseJsonResponse } from '../services/gemini'
 import { DONORS_SYSTEM, DONORS_USER } from '../prompts/donors'
 import { Panel } from './Panel'
 import type { CompanyEntry } from '../store/usePlaygroundStore'
@@ -28,7 +28,7 @@ export function DonorCompanies() {
     setLoading('donors', true)
     try {
       const skills = [...jdAnalysis.mustHaveSkills, ...jdAnalysis.tools]
-      const response = await callClaude(
+      const response = await callAI(
         apiKey,
         DONORS_SYSTEM,
         DONORS_USER(jdAnalysis.summary, skills, jdAnalysis.industry),

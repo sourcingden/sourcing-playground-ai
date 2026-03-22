@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { usePlaygroundStore } from '../store/usePlaygroundStore'
-import { callClaude, parseJsonResponse } from '../services/claude'
+import { callAI, parseJsonResponse } from '../services/gemini'
 import { BOOLEAN_GENERATE_SYSTEM, BOOLEAN_GENERATE_USER, BOOLEAN_REVIEW_SYSTEM, BOOLEAN_REVIEW_USER } from '../prompts/boolean'
 import { Panel } from './Panel'
 
@@ -41,7 +41,7 @@ export function BooleanBuilder() {
     setLoading('boolean', true)
     try {
       const context = jdAnalysis?.summary || selectedTerms.join(', ')
-      const response = await callClaude(apiKey, BOOLEAN_GENERATE_SYSTEM, BOOLEAN_GENERATE_USER(selectedTerms, context))
+      const response = await callAI(apiKey, BOOLEAN_GENERATE_SYSTEM, BOOLEAN_GENERATE_USER(selectedTerms, context))
       setGenerated(parseJsonResponse<BooleanStrings>(response))
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed')
@@ -55,7 +55,7 @@ export function BooleanBuilder() {
     setError('')
     setLoading('boolean-review', true)
     try {
-      const response = await callClaude(apiKey, BOOLEAN_REVIEW_SYSTEM, BOOLEAN_REVIEW_USER(practiceQuery))
+      const response = await callAI(apiKey, BOOLEAN_REVIEW_SYSTEM, BOOLEAN_REVIEW_USER(practiceQuery))
       setReview(parseJsonResponse<BooleanReview>(response))
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed')
