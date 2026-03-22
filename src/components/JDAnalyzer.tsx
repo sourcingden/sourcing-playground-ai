@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { usePlaygroundStore } from '../store/usePlaygroundStore'
-import { callAI, parseJsonResponse } from '../services/gemini'
+import { callAIWithRetry, parseJsonResponse } from '../services/gemini'
 import { JD_ANALYSIS_SYSTEM, JD_ANALYSIS_USER } from '../prompts/jdAnalysis'
 import { Panel } from './Panel'
+import { validateApiKey, validateJobDescription, sanitizeInput } from '../utils/validation'
 import type { JDAnalysis } from '../store/usePlaygroundStore'
 
 export function JDAnalyzer() {
@@ -18,19 +19,22 @@ export function JDAnalyzer() {
   const setLoading = usePlaygroundStore((s) => s.setLoading)
 
   const handleAnalyze = async () => {
-    if (!apiKey) {
-      setError('Please set your API key first')
+    const apiKeyError = validateApiKey(apiKey)
+    if (apiKeyError) {
+      setError(apiKeyError)
       return
     }
-    if (!jobDescription.trim()) {
-      setError('Please paste a job description')
+    const jdError = validateJobDescription(jobDescription)
+    if (jdError) {
+      setError(jdError)
       return
     }
 
     setError('')
     setLoading('jd', true)
     try {
-      const response = await callAI(apiKey, JD_ANALYSIS_SYSTEM, JD_ANALYSIS_USER(jobDescription))
+      const sanitizedJD = sanitizeInput(jobDescription)
+      const response = await callAIWithRetry(apiKey, JD_ANALYSIS_SYSTEM, JD_ANALYSIS_USER(sanitizedJD))
       const analysis = parseJsonResponse<JDAnalysis>(response)
       setJDAnalysis(analysis)
 
@@ -51,7 +55,9 @@ export function JDAnalyzer() {
   return (
     <Panel title="JD Analyzer" icon="📋" loading={loading} className="row-span-2">
       <div className="flex flex-col gap-3 h-full">
+        <label htmlFor="jd-input" className="sr-only">Job Description</label>
         <textarea
+          id="jd-input"
           value={jobDescription}
           onChange={(e) => setJobDescription(e.target.value)}
           placeholder="Paste job description here..."
@@ -64,10 +70,10 @@ export function JDAnalyzer() {
         >
           {loading ? 'Analyzing...' : 'Analyze JD'}
         </button>
-        {error && <p className="text-accent-rose text-xs">{error}</p>}
+        {error && <p className="text-accent-rose text-xs" role="alert">{error}</p>}
 
         {jdAnalysis && (
-          <div className="mt-2 space-y-2 text-xs">
+          <div className="mt-2 space-y-2 text-xs" aria-live="polite">
             <div className="flex gap-2">
               <span className="px-2 py-0.5 bg-primary/15 text-primary rounded font-medium">
                 {jdAnalysis.jobTitle}

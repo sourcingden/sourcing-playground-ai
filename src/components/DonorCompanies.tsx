@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { usePlaygroundStore } from '../store/usePlaygroundStore'
-import { callAI, parseJsonResponse } from '../services/gemini'
+import { callAIWithRetry, parseJsonResponse } from '../services/gemini'
 import { DONORS_SYSTEM, DONORS_USER } from '../prompts/donors'
 import { Panel } from './Panel'
 import type { CompanyEntry } from '../store/usePlaygroundStore'
@@ -28,7 +28,7 @@ export function DonorCompanies() {
     setLoading('donors', true)
     try {
       const skills = [...jdAnalysis.mustHaveSkills, ...jdAnalysis.tools]
-      const response = await callAI(
+      const response = await callAIWithRetry(
         apiKey,
         DONORS_SYSTEM,
         DONORS_USER(jdAnalysis.summary, skills, jdAnalysis.industry),
@@ -63,24 +63,26 @@ export function DonorCompanies() {
               {donorCompanies.length > 0 ? 'Regenerate' : 'Find Donor Companies'}
             </button>
 
-            {Object.entries(grouped).map(([category, companies]) => (
-              <div key={category}>
-                <span className={`text-xs font-medium px-2 py-0.5 rounded ${categoryColors[category] || 'text-text-muted bg-surface-lighter'}`}>
-                  {category}
-                </span>
-                <div className="mt-1.5 space-y-1">
-                  {companies.map((c) => (
-                    <div key={c.name} className="bg-surface rounded-lg px-3 py-2">
-                      <span className="text-sm font-medium text-text">{c.name}</span>
-                      <p className="text-xs text-text-muted mt-0.5">{c.reason}</p>
-                    </div>
-                  ))}
+            <div aria-live="polite">
+              {Object.entries(grouped).map(([category, companies]) => (
+                <div key={category} className="mb-3">
+                  <span className={`text-xs font-medium px-2 py-0.5 rounded ${categoryColors[category] || 'text-text-muted bg-surface-lighter'}`}>
+                    {category}
+                  </span>
+                  <div className="mt-1.5 space-y-1">
+                    {companies.map((c) => (
+                      <div key={c.name} className="bg-surface rounded-lg px-3 py-2">
+                        <span className="text-sm font-medium text-text">{c.name}</span>
+                        <p className="text-xs text-text-muted mt-0.5">{c.reason}</p>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </>
         )}
-        {error && <p className="text-accent-rose text-xs">{error}</p>}
+        {error && <p className="text-accent-rose text-xs" role="alert">{error}</p>}
       </div>
     </Panel>
   )

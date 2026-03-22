@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { usePlaygroundStore } from '../store/usePlaygroundStore'
-import { callAI, parseJsonResponse } from '../services/gemini'
+import { callAIWithRetry, parseJsonResponse } from '../services/gemini'
 import { JOB_TITLES_SYSTEM, JOB_TITLES_USER } from '../prompts/jobTitles'
 import { Panel } from './Panel'
 import { TagList } from './TagList'
@@ -20,7 +20,7 @@ export function JobTitles() {
     setLoading('titles', true)
     setError('')
     try {
-      const response = await callAI(
+      const response = await callAIWithRetry(
         apiKey,
         JOB_TITLES_SYSTEM,
         JOB_TITLES_USER(jdAnalysis.jobTitle, jdAnalysis.summary),
@@ -41,9 +41,11 @@ export function JobTitles() {
           <p className="text-text-muted text-sm">Analyze a JD first</p>
         ) : (
           <>
-            {jobTitles.length > 0 && (
-              <TagList tags={jobTitles} onTagClick={addTerm} color="purple" size="md" />
-            )}
+            <div aria-live="polite">
+              {jobTitles.length > 0 && (
+                <TagList tags={jobTitles} onTagClick={addTerm} color="purple" size="md" />
+              )}
+            </div>
             <button
               onClick={handleGenerate}
               disabled={loading}
@@ -53,7 +55,7 @@ export function JobTitles() {
             </button>
           </>
         )}
-        {error && <p className="text-accent-rose text-xs">{error}</p>}
+        {error && <p className="text-accent-rose text-xs" role="alert">{error}</p>}
       </div>
     </Panel>
   )

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { usePlaygroundStore } from '../store/usePlaygroundStore'
-import { callAI, parseJsonResponse } from '../services/gemini'
+import { callAIWithRetry, parseJsonResponse } from '../services/gemini'
 import { OUTREACH_SYSTEM, OUTREACH_USER } from '../prompts/outreach'
 import { Panel } from './Panel'
 
@@ -30,7 +30,7 @@ export function OutreachGenerator() {
     setError('')
     setLoading('outreach', true)
     try {
-      const response = await callAI(
+      const response = await callAIWithRetry(
         apiKey,
         OUTREACH_SYSTEM,
         OUTREACH_USER({
@@ -59,47 +59,67 @@ export function OutreachGenerator() {
   return (
     <Panel title="Outreach Generator" icon="✉️" loading={loading}>
       <div className="space-y-2">
-        <input
-          value={candidateName}
-          onChange={(e) => setCandidateName(e.target.value)}
-          placeholder="Candidate name"
-          className="w-full px-2.5 py-1.5 bg-surface border border-border rounded-lg text-sm text-text"
-        />
+        <div>
+          <label htmlFor="candidate-name" className="sr-only">Candidate name</label>
+          <input
+            id="candidate-name"
+            value={candidateName}
+            onChange={(e) => setCandidateName(e.target.value)}
+            placeholder="Candidate name"
+            className="w-full px-2.5 py-1.5 bg-surface border border-border rounded-lg text-sm text-text"
+          />
+        </div>
         <div className="flex gap-2">
-          <input
-            value={currentRole}
-            onChange={(e) => setCurrentRole(e.target.value)}
-            placeholder="Current role"
-            className="flex-1 px-2.5 py-1.5 bg-surface border border-border rounded-lg text-sm text-text"
-          />
-          <input
-            value={currentCompany}
-            onChange={(e) => setCurrentCompany(e.target.value)}
-            placeholder="Company"
-            className="flex-1 px-2.5 py-1.5 bg-surface border border-border rounded-lg text-sm text-text"
+          <div className="flex-1">
+            <label htmlFor="current-role" className="sr-only">Current role</label>
+            <input
+              id="current-role"
+              value={currentRole}
+              onChange={(e) => setCurrentRole(e.target.value)}
+              placeholder="Current role"
+              className="w-full px-2.5 py-1.5 bg-surface border border-border rounded-lg text-sm text-text"
+            />
+          </div>
+          <div className="flex-1">
+            <label htmlFor="current-company" className="sr-only">Company</label>
+            <input
+              id="current-company"
+              value={currentCompany}
+              onChange={(e) => setCurrentCompany(e.target.value)}
+              placeholder="Company"
+              className="w-full px-2.5 py-1.5 bg-surface border border-border rounded-lg text-sm text-text"
+            />
+          </div>
+        </div>
+        <div>
+          <label htmlFor="candidate-highlights" className="sr-only">Candidate highlights</label>
+          <textarea
+            id="candidate-highlights"
+            value={highlights}
+            onChange={(e) => setHighlights(e.target.value)}
+            placeholder="What attracted you to this candidate?"
+            className="w-full h-16 bg-surface border border-border rounded-lg p-2 text-sm text-text resize-none"
           />
         </div>
-        <textarea
-          value={highlights}
-          onChange={(e) => setHighlights(e.target.value)}
-          placeholder="What attracted you to this candidate?"
-          className="w-full h-16 bg-surface border border-border rounded-lg p-2 text-sm text-text resize-none"
-        />
-        <div className="flex gap-1">
-          {['formal', 'friendly', 'short'].map((t) => (
-            <button
-              key={t}
-              onClick={() => setTone(t)}
-              className={`flex-1 py-1 text-xs rounded-md transition-colors cursor-pointer capitalize ${
-                tone === t
-                  ? 'bg-primary text-white'
-                  : 'bg-surface text-text-muted hover:text-text'
-              }`}
-            >
-              {t}
-            </button>
-          ))}
-        </div>
+        <fieldset>
+          <legend className="sr-only">Message tone</legend>
+          <div className="flex gap-1">
+            {['formal', 'friendly', 'short'].map((t) => (
+              <button
+                key={t}
+                onClick={() => setTone(t)}
+                aria-pressed={tone === t}
+                className={`flex-1 py-1 text-xs rounded-md transition-colors cursor-pointer capitalize ${
+                  tone === t
+                    ? 'bg-primary text-white'
+                    : 'bg-surface text-text-muted hover:text-text'
+                }`}
+              >
+                {t}
+              </button>
+            ))}
+          </div>
+        </fieldset>
         <button
           onClick={handleGenerate}
           disabled={loading}
@@ -109,11 +129,15 @@ export function OutreachGenerator() {
         </button>
 
         {result && (
-          <div className="space-y-2 pt-1">
+          <div className="space-y-2 pt-1" aria-live="polite">
             <div className="bg-surface rounded-lg p-3">
               <div className="flex items-center justify-between mb-1">
                 <span className="text-xs font-medium text-text-muted">Email</span>
-                <button onClick={() => copyToClipboard(`Subject: ${result.subject}\n\n${result.message}`, 'email')} className="text-xs text-primary cursor-pointer">
+                <button
+                  onClick={() => copyToClipboard(`Subject: ${result.subject}\n\n${result.message}`, 'email')}
+                  aria-label="Copy email message"
+                  className="text-xs text-primary cursor-pointer"
+                >
                   {copied === 'email' ? 'Copied!' : 'Copy'}
                 </button>
               </div>
@@ -123,7 +147,11 @@ export function OutreachGenerator() {
             <div className="bg-surface rounded-lg p-3">
               <div className="flex items-center justify-between mb-1">
                 <span className="text-xs font-medium text-text-muted">LinkedIn Note</span>
-                <button onClick={() => copyToClipboard(result.linkedinNote, 'linkedin')} className="text-xs text-primary cursor-pointer">
+                <button
+                  onClick={() => copyToClipboard(result.linkedinNote, 'linkedin')}
+                  aria-label="Copy LinkedIn note"
+                  className="text-xs text-primary cursor-pointer"
+                >
                   {copied === 'linkedin' ? 'Copied!' : 'Copy'}
                 </button>
               </div>
@@ -131,7 +159,7 @@ export function OutreachGenerator() {
             </div>
           </div>
         )}
-        {error && <p className="text-accent-rose text-xs">{error}</p>}
+        {error && <p className="text-accent-rose text-xs" role="alert">{error}</p>}
       </div>
     </Panel>
   )
