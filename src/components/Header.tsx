@@ -27,14 +27,14 @@ export function Header() {
 
   return (
     <>
-      <header className="flex items-center justify-between px-6 py-4 border-b border-border bg-surface-light/50 backdrop-blur-sm">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white font-bold text-sm" aria-hidden="true">
+      <header className="flex items-center justify-between px-6 py-5 border-b border-white/5 glass-panel sticky top-0 z-40">
+        <div className="flex items-center gap-3.5">
+          <div className="w-10 h-10 bg-gradient-to-br from-primary to-accent-purple rounded-xl flex items-center justify-center text-white font-black text-lg shadow-lg shadow-primary/20" aria-hidden="true">
             AI
           </div>
           <div>
-            <h1 className="text-lg font-bold text-text leading-tight">Sourcing Playground</h1>
-            <p className="text-xs text-text-muted">AI-powered talent sourcing toolkit</p>
+            <h1 className="text-xl font-black text-gradient leading-tight tracking-tight">Sourcing Playground</h1>
+            <p className="text-xs font-medium text-text-muted mt-0.5">AI-powered talent sourcing toolkit</p>
           </div>
         </div>
         <button
@@ -43,10 +43,10 @@ export function Header() {
             setShowSettings(true)
           }}
           aria-label={apiKey ? 'API connected. Click to change API key settings' : 'API key not set. Click to configure'}
-          className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm transition-colors cursor-pointer ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all shadow-sm active:scale-95 cursor-pointer ${
             apiKey
-              ? 'bg-accent-green/15 text-accent-green border border-accent-green/30'
-              : 'bg-accent-rose/15 text-accent-rose border border-accent-rose/30'
+              ? 'bg-accent-green/10 text-accent-green border border-accent-green/20 hover:bg-accent-green/20 hover:border-accent-green/40'
+              : 'bg-accent-rose/10 text-accent-rose border border-accent-rose/20 hover:bg-accent-rose/20 hover:border-accent-rose/40 animate-pulse'
           }`}
         >
           <span className={`w-2 h-2 rounded-full ${apiKey ? 'bg-accent-green' : 'bg-accent-rose'}`} aria-hidden="true" />

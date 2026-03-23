@@ -66,9 +66,9 @@ export function JDAnalyzer() {
         <button
           onClick={handleAnalyze}
           disabled={loading}
-          className="w-full py-2.5 bg-primary hover:bg-primary-dark disabled:opacity-50 text-white text-sm font-medium rounded-lg transition-colors cursor-pointer"
+          className="w-full py-4 mt-2 bg-gradient-to-r from-primary to-accent-purple hover:from-primary-dark hover:to-primary disabled:opacity-50 text-white text-base font-bold rounded-xl transition-all cursor-pointer shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:-translate-y-0.5 active:translate-y-0"
         >
-          {loading ? 'Analyzing...' : 'Analyze JD'}
+          {loading ? 'Analyzing...' : 'Analyze JD ✨'}
         </button>
         {error && <p className="text-accent-rose text-xs" role="alert">{error}</p>}
 

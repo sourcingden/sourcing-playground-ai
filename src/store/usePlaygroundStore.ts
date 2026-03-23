@@ -29,6 +29,10 @@ interface PlaygroundState {
   jdAnalysis: JDAnalysis | null
   setJDAnalysis: (analysis: JDAnalysis | null) => void
 
+  // Stream Selection
+  activeStream: 'boolean' | 'outreach' | 'companies' | null
+  setActiveStream: (stream: 'boolean' | 'outreach' | 'companies' | null) => void
+
   // Keywords & Skills
   keywords: string[]
   setKeywords: (keywords: string[]) => void
@@ -65,6 +69,9 @@ export const usePlaygroundStore = create<PlaygroundState>((set) => ({
   setJobDescription: (jd) => set({ jobDescription: jd }),
   jdAnalysis: null,
   setJDAnalysis: (analysis) => set({ jdAnalysis: analysis }),
+
+  activeStream: null,
+  setActiveStream: (stream) => set({ activeStream: stream }),
 
   keywords: [],
   setKeywords: (keywords) => set({ keywords }),

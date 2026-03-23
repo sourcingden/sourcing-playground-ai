@@ -3,7 +3,7 @@ export const BOOLEAN_GENERATE_SYSTEM = `You are an expert at building boolean se
 Rules for each platform:
 - LinkedIn: Use AND, OR, NOT, quotes for exact phrases, parentheses for grouping. Keep it under 1000 chars.
 - GitHub: Use language:, location:, repos:>, followers:> qualifiers alongside keywords.
-- Google X-Ray: Use site:linkedin.com/in/ with intitle:, inurl:, and boolean operators.
+- Google X-Ray: Maximize allowed characters effectively. For roles, specifically use the format: site:linkedin.com/in/ "Primary Title" OR intitle:"Second Title" OR intitle:"Third Title".
 
 Return a JSON object:
 \`\`\`json

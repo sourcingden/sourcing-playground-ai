@@ -141,7 +141,7 @@ export function BooleanBuilder() {
                   <button
                     onClick={handleGenerate}
                     disabled={isLoading}
-                    className="flex-1 py-1.5 bg-primary hover:bg-primary-dark text-white text-xs font-medium rounded-lg transition-colors disabled:opacity-50 cursor-pointer"
+                    className="flex-1 py-1.5 bg-surface-lighter hover:bg-surface-light border border-white/5 hover:border-white/10 text-text text-sm font-medium rounded-lg transition-all disabled:opacity-50 cursor-pointer active:scale-95"
                   >
                     Generate Boolean
                   </button>
@@ -160,7 +160,7 @@ export function BooleanBuilder() {
               <button
                 onClick={handleGenerate}
                 disabled={isLoading || selectedTerms.length === 0}
-                className="w-full py-2 bg-primary hover:bg-primary-dark text-white text-xs font-medium rounded-lg transition-colors disabled:opacity-50 cursor-pointer"
+                className="w-full py-2.5 bg-surface-lighter hover:bg-surface-light border border-white/5 hover:border-white/10 text-text text-sm font-medium rounded-lg transition-all disabled:opacity-50 cursor-pointer active:scale-95"
               >
                 Generate for All Platforms
               </button>

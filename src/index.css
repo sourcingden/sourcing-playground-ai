@@ -1,42 +1,64 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #6366f1;
-  --color-primary-dark: #4f46e5;
-  --color-surface: #1e1e2e;
-  --color-surface-light: #2a2a3e;
-  --color-surface-lighter: #363650;
-  --color-border: #3a3a50;
-  --color-text: #e2e8f0;
+  --color-primary: #8b5cf6;
+  --color-primary-dark: #7c3aed;
+  --color-surface: #0b0f19;
+  --color-surface-light: #151b2b;
+  --color-surface-lighter: #1e293b;
+  --color-border: #334155;
+  --color-text: #f8fafc;
   --color-text-muted: #94a3b8;
   --color-accent-green: #10b981;
   --color-accent-amber: #f59e0b;
   --color-accent-rose: #f43f5e;
   --color-accent-blue: #3b82f6;
-  --color-accent-purple: #8b5cf6;
+  --color-accent-purple: #a855f7;
 }
 
 body {
   margin: 0;
   background-color: var(--color-surface);
+  background-image: radial-gradient(circle at 50% 0%, #172033 0%, transparent 70%);
   color: var(--color-text);
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   min-height: 100vh;
 }
 
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
+  height: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: var(--color-surface);
+  background: transparent;
 }
 ::-webkit-scrollbar-thumb {
   background: var(--color-surface-lighter);
-  border-radius: 3px;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-border);
 }
 
 textarea:focus, input:focus {
   outline: none;
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.25);
 }
+
+/* Custom premium utilities */
+@utility glass-panel {
+  background: rgba(21, 27, 43, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+@utility text-gradient {
+  background: linear-gradient(135deg, #a855f7 0%, #3b82f6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+

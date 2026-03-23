@@ -9,21 +9,21 @@ interface PanelProps {
 }
 
 export function Panel({ title, icon, children, loading, className = '' }: PanelProps) {
-  const [collapsed, setCollapsed] = useState(false)
+  const [collapsed, setCollapsed] = useState(true)
   const panelId = title.toLowerCase().replace(/\s+/g, '-')
 
   return (
     <section
       role="region"
       aria-label={title}
-      className={`bg-surface-light rounded-xl border border-border flex flex-col overflow-hidden ${className}`}
+      className={`glass-panel rounded-xl flex flex-col overflow-hidden transition-all duration-300 ${className}`}
     >
       <div
         role="button"
         tabIndex={0}
         aria-expanded={!collapsed}
         aria-controls={`${panelId}-content`}
-        className="flex items-center justify-between px-4 py-3 border-b border-border cursor-pointer select-none hover:bg-surface-lighter/50 transition-colors"
+        className="flex items-center justify-between px-4 py-3 border-b border-border/50 cursor-pointer select-none hover:bg-white/5 active:bg-white/10 transition-colors"
         onClick={() => setCollapsed(!collapsed)}
         onKeyDown={(e) => {
           if (e.key === 'Enter' || e.key === ' ') {
@@ -32,9 +32,9 @@ export function Panel({ title, icon, children, loading, className = '' }: PanelP
           }
         }}
       >
-        <div className="flex items-center gap-2">
-          <span className="text-lg" aria-hidden="true">{icon}</span>
-          <h3 className="text-sm font-semibold text-text">{title}</h3>
+        <div className="flex items-center gap-3">
+          <span className="text-xl opacity-90" aria-hidden="true">{icon}</span>
+          <h3 className="text-lg font-bold text-text tracking-tight">{title}</h3>
         </div>
         <div className="flex items-center gap-2">
           {loading && (
@@ -49,11 +49,16 @@ export function Panel({ title, icon, children, loading, className = '' }: PanelP
           <span className="text-text-muted text-xs" aria-hidden="true">{collapsed ? '▸' : '▾'}</span>
         </div>
       </div>
-      {!collapsed && (
-        <div id={`${panelId}-content`} className="p-4 flex-1 overflow-y-auto">
-          {children}
+      <div 
+        id={`${panelId}-content`} 
+        className={`grid transition-all duration-300 ease-in-out ${collapsed ? 'grid-rows-[0fr] opacity-0' : 'grid-rows-[1fr] opacity-100'}`}
+      >
+        <div className="overflow-hidden">
+          <div className="p-4 flex-1 overflow-y-auto">
+            {children}
+          </div>
         </div>
-      )}
+      </div>
     </section>
   )
 }
